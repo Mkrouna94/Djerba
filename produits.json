@@ -1,0 +1,6 @@
+[
+  { "id": 1, "nom": "Champagne", "prix": 28.99, "categorie": "Boissons",  "image": "Images/champagne moet.jpg" },
+  { "id": 2, "nom": "Pack de bières", "prix": 11.99, "categorie": "Boissons", "image": "Images/pack heinken.jpg" },
+  { "id": 3, "nom": "Saucisson", "prix": 4.50, "categorie": "Epicerie", "image": "https://via.placeholder.com/150" },
+  { "id": 4, "nom": "Camembert", "prix": 5.99, "categorie": "Boissons", "image": "https://via.placeholder.com/150" }
+]

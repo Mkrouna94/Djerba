@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Promotions</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="produits.html">Produits</a>
+      <a href="promotions.html" class="active">Promotions</a>
+      <a href="favoris.html">Favoris</a>
+      <a href="panier.html">Panier</a>
+      <a href="gestion-produits.html">Gestion des Produits</a>
+      <a href="connexion.html" id="login-btn" style="display:none;">Se connecter</a>
+      <a href="profil.html" id="profil-link" style="display:none;">Mon profil</a>
+    </nav>
+  </header>
+  <main>
+    <section class="main-card">
+      <h2 class="section-title">Promotions</h2>
+      <div class="promotions-list" style="display: flex; flex-wrap: wrap; gap: 2rem; justify-content: flex-start;"></div>
+    </section>
+  </main>
+  <script>
+    // Affichage conditionnel du bouton "Se connecter" ou "Mon profil"
+    const user = JSON.parse(localStorage.getItem('user'));
+    const loginBtn = document.getElementById('login-btn');
+    const profilLink = document.getElementById('profil-link');
+    if (user && user.email) {
+      loginBtn.style.display = 'none';
+      profilLink.style.display = 'inline-block';
+    } else {
+      loginBtn.style.display = 'inline-block';
+      profilLink.style.display = 'none';
+    }
+
+    // Affichage des promotions
+    const promotionsList = document.querySelector('.promotions-list');
+    promotionsList.innerHTML = '';
+    const produits = JSON.parse(localStorage.getItem('produits')) || [];
+    produits.filter(produit => produit.promotion > 0).forEach(produit => {
+      const promotionElement = document.createElement('div');
+      promotionElement.classList.add('promotion-item');
+      promotionElement.innerHTML = `
+        <img src="Images/${produit.image}" alt="${produit.nom}">
+        <h3>${produit.nom}</h3>
+        <p>
+          <span class="old-price">${produit.prix} €</span>
+          <span class="new-price">${(produit.prix * (1 - produit.promotion / 100)).toFixed(2)} €</span>
+        </p>
+        <p class="discount">${produit.promotion}% de réduction</p>
+        <p class="description">${produit.description || 'Aucune description disponible.'}</p>
+        <div class="ajout-panier-quantite">
+          <input type="number" min="1" value="1" class="input-quantite" style="width: 60px; margin-right: 0.5rem;">
+          <button class="add-to-cart" data-nom="${produit.nom}" data-prix="${produit.prix}" data-description="${produit.description}" data-image="${produit.image}" data-promotion="${produit.promotion}">Ajouter au panier</button>
+        </div>
+        <button class="add-to-favoris" data-nom="${produit.nom}" data-description="${produit.description}" data-image="${produit.image}">Ajouter aux favoris</button>
+      `;
+      promotionsList.appendChild(promotionElement);
+    });
+
+    // Ajout au panier et favoris
+    document.addEventListener('click', (event) => {
+      if (event.target.classList.contains('add-to-cart')) {
+        const nom = event.target.getAttribute('data-nom');
+        const prix = event.target.getAttribute('data-prix');
+        const description = event.target.getAttribute('data-description');
+        const image = event.target.getAttribute('data-image');
+        const promotion = event.target.getAttribute('data-promotion') || 0;
+        // Récupérer la quantité sélectionnée
+        let quantite = 1;
+        const parent = event.target.closest('.ajout-panier-quantite');
+        if (parent) {
+          const inputQ = parent.querySelector('.input-quantite');
+          if (inputQ && parseInt(inputQ.value) > 0) {
+            quantite = parseInt(inputQ.value);
+          }
+        }
+        let panier = JSON.parse(localStorage.getItem('panier')) || [];
+        // Chercher si le produit existe déjà (même nom, même promotion)
+        const indexProduit = panier.findIndex(p => p.nom === nom && p.promotion == promotion);
+        if (indexProduit !== -1) {
+          panier[indexProduit].quantite = (panier[indexProduit].quantite || 1) + quantite;
+        } else {
+          panier.push({ nom, prix, description, image, promotion, quantite });
+        }
+        localStorage.setItem('panier', JSON.stringify(panier));
+        alert(`${nom} a été ajouté à votre panier !`);
+      }
+
+      if (event.target.classList.contains('add-to-favoris')) {
+        const nom = event.target.getAttribute('data-nom');
+        const description = event.target.getAttribute('data-description');
+        const image = event.target.getAttribute('data-image');
+        let favoris = JSON.parse(localStorage.getItem('favoris')) || [];
+        if (!favoris.some(produit => produit.nom === nom)) {
+          favoris.push({ nom, description, image });
+          localStorage.setItem('favoris', JSON.stringify(favoris));
+          alert(`${nom} a été ajouté à vos favoris !`);
+        } else {
+          alert(`${nom} est déjà dans vos favoris.`);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panier - L'Apéro by Djerba</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>L'Apéro by Djerba</h1>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="produits.html">Produits</a>
+      <a href="promotions.html">Promotions</a>
+      <a href="favoris.html">Favoris</a>
+      <a href="panier.html">Panier</a>
+      <a href="connexion.html" id="login-btn" style="display:none;">Se connecter</a>
+      <a href="profil.html" id="profil-link" style="display:none;">Mon profil</a>
+    </nav>
+  </header>
+  <main>
+    <section class="main-card">
+      <h2 class="section-title">Mon Panier</h2>
+      <div id="panier-container">
+        <!-- Les produits du panier seront affichés ici -->
+      </div>
+    </section>
+  </main>
+  <script src="panier.js"></script>
+  <script>
+    // Affichage conditionnel du bouton "Se connecter" ou "Mon profil"
+    const user = JSON.parse(localStorage.getItem('user'));
+    const loginBtn = document.getElementById('login-btn');
+    const profilLink = document.getElementById('profil-link');
+    if (user && user.email) {
+      loginBtn.style.display = 'none';
+      profilLink.style.display = 'inline-block';
+    } else {
+      loginBtn.style.display = 'inline-block';
+      profilLink.style.display = 'none';
+    }
+  </script>
+</body>
+</html>

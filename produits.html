@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Produits - L'Apéro by Djerba</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>L'Apéro by Djerba</h1>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="produits.html">Produits</a>
+      <a href="promotions.html">Promotions</a>
+      <a href="favoris.html">Favoris</a>
+      <a href="panier.html">Panier</a>
+      <a href="connexion.html" id="login-btn" style="display:none;">Se connecter</a>
+      <a href="profil.html" id="profil-link" style="display:none;">Mon profil</a>
+    </nav>
+  </header>
+  <main>
+    <section class="main-card">
+      <h2 class="section-title">Produits par Catégorie</h2>
+      <div class="categorie" id="Boissons">
+        <h3>Boissons</h3>
+        <div class="produits"></div>
+      </div>
+      <div class="categorie" id="Charcuterie">
+        <h3>Charcuterie</h3>
+        <div class="produits"></div>
+      </div>
+      <div class="categorie" id="Fromages">
+        <h3>Fromages</h3>
+        <div class="produits"></div>
+      </div>
+      <div class="categorie" id="Autres">
+        <h3>Autres</h3>
+        <div class="produits"></div>
+      </div>
+    </section>
+  </main>
+  <script>
+    // Affichage conditionnel du bouton "Se connecter" ou "Mon profil"
+    const user = JSON.parse(localStorage.getItem('user'));
+    const loginBtn = document.getElementById('login-btn');
+    const profilLink = document.getElementById('profil-link');
+    if (user && user.email) {
+      loginBtn.style.display = 'none';
+      profilLink.style.display = 'inline-block';
+    } else {
+      loginBtn.style.display = 'inline-block';
+      profilLink.style.display = 'none';
+    }
+    document.querySelectorAll('.add-to-favoris').forEach(button => {
+      button.addEventListener('click', () => {
+        const nom = button.getAttribute('data-nom');
+        const prix = button.getAttribute('data-prix');
+        const favoris = JSON.parse(localStorage.getItem('favoris')) || [];
+        favoris.push({ nom, prix });
+        localStorage.setItem('favoris', JSON.stringify(favoris));
+        alert(`${nom} a été ajouté à vos favoris !`);
+      });
+    });
+
+
+    // Gestion dynamique de l'ajout au panier (avec image et description)
+    document.addEventListener('click', (event) => {
+      if (event.target.classList.contains('add-to-cart')) {
+        const button = event.target;
+        const nom = button.getAttribute('data-nom');
+        const prix = button.getAttribute('data-prix');
+        const description = button.getAttribute('data-description');
+        let image = button.getAttribute('data-image');
+        let promotion = button.getAttribute('data-promotion');
+        if (!image || !promotion) {
+          // On tente de récupérer l'image et la promotion du parent .produit
+          const produitDiv = button.closest('.produit');
+          if (produitDiv) {
+            const imgTag = produitDiv.querySelector('img');
+            if (imgTag) {
+              const src = imgTag.getAttribute('src');
+              image = src ? src.replace(/^Images\//, '').replace(/^\.\/Images\//, '') : '';
+            }
+            // On tente de récupérer la promotion depuis le localStorage produits
+            const produitsLS = JSON.parse(localStorage.getItem('produits')) || [];
+            const prodLS = produitsLS.find(p => p.nom === nom);
+            if (prodLS && prodLS.promotion) {
+              promotion = prodLS.promotion;
+            } else {
+              promotion = 0;
+            }
+          }
+        }
+        let panier = JSON.parse(localStorage.getItem('panier')) || [];
+        // Chercher si le produit existe déjà (même nom, même promotion)
+        const indexProduit = panier.findIndex(p => p.nom === nom && p.promotion == promotion);
+        // Récupérer la quantité sélectionnée
+        let quantite = 1;
+        const parent = button.closest('.ajout-panier-quantite');
+        if (parent) {
+          const inputQ = parent.querySelector('.input-quantite');
+          if (inputQ && parseInt(inputQ.value) > 0) {
+            quantite = parseInt(inputQ.value);
+          }
+        }
+        if (indexProduit !== -1) {
+          panier[indexProduit].quantite = (panier[indexProduit].quantite || 1) + quantite;
+        } else {
+          panier.push({ nom, prix, description, image, promotion, quantite });
+        }
+        localStorage.setItem('panier', JSON.stringify(panier));
+        alert(`${nom} a été ajouté à votre panier !`);
+      }
+    });
+
+    const produits = JSON.parse(localStorage.getItem('produits')) || [];
+
+    produits.forEach(produit => {
+      const categorieContainer = document.getElementById(produit.categorie);
+      if (categorieContainer) {
+        const produitsContainer = categorieContainer.querySelector('.produits');
+        const produitElement = document.createElement('div');
+        produitElement.classList.add('produit');
+        produitElement.innerHTML = `
+          <img src="Images/${produit.image}" alt="${produit.nom}">
+          <h3>${produit.nom}</h3>
+          <p>${produit.promotion > 0 ? `<span class='old-price'>${produit.prix} €</span> <span class='new-price'>${(produit.prix * (1 - produit.promotion / 100)).toFixed(2)} €</span>` : `${produit.prix} €`}</p>
+          <p class="description">${produit.description || 'Aucune description disponible.'}</p>
+          <div class="ajout-panier-quantite">
+            <input type="number" min="1" value="1" class="input-quantite" style="width: 60px; margin-right: 0.5rem;">
+            <button class="add-to-cart" data-nom="${produit.nom}" data-prix="${produit.prix}" data-description="${produit.description}" data-image="${produit.image}" data-promotion="${produit.promotion}">Ajouter au panier</button>
+          </div>
+          <button class="add-to-favoris" data-nom="${produit.nom}" data-description="${produit.description}" data-image="${produit.image}">Ajouter aux favoris</button>
+        `;
+        produitsContainer.appendChild(produitElement);
+      }
+    });
+  </script>
+</body>
+</html>

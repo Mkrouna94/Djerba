@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon Profil - L'Apéro by Djerba</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>L'Apéro by Djerba</h1>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="produits.html">Produits</a>
+      <a href="promotions.html">Promotions</a>
+      <a href="favoris.html">Favoris</a>
+      <a href="panier.html">Panier</a>
+      <a href="gestion-produits.html">Gestion des Produits</a>
+      <a href="connexion.html" id="login-btn" style="display:none;">Se connecter</a>
+      <a href="profil.html" id="profil-link" style="display:none;">Mon profil</a>
+    </nav>
+  </header>
+  <main>
+    <section class="profil-section">
+      <div class="profil-card">
+        <div class="profil-avatar-container">
+          <img src="https://www.gravatar.com/avatar/?d=mp&s=100" alt="Avatar" class="profil-avatar" id="profil-avatar">
+        </div>
+        <div class="profil-header">
+          <h2 id="profil-nom-header">Nom Prénom</h2>
+          <p id="profil-email-header">email@email.com</p>
+        </div>
+        <hr class="profil-separator">
+        <form id="profil-form" class="profil-form">
+          <div class="profil-form-group">
+            <label for="profil-email">Adresse e-mail</label>
+            <input type="email" id="profil-email" name="email" required>
+          </div>
+          <div class="profil-form-group">
+            <label for="profil-nom">Nom</label>
+            <input type="text" id="profil-nom" name="nom" required>
+          </div>
+          <div class="profil-form-group">
+            <label for="profil-prenom">Prénom</label>
+            <input type="text" id="profil-prenom" name="prenom" required>
+          </div>
+          <div class="profil-form-group">
+            <label for="profil-adresse">Adresse</label>
+            <input type="text" id="profil-adresse" name="adresse">
+          </div>
+          <div class="profil-form-group">
+            <label for="profil-ville">Ville</label>
+            <input type="text" id="profil-ville" name="ville">
+          </div>
+          <div class="profil-form-group">
+            <label for="profil-codepostal">Code postal</label>
+            <input type="text" id="profil-codepostal" name="codepostal">
+          </div>
+          <div class="profil-form-group">
+            <label for="profil-telephone">Téléphone</label>
+            <input type="tel" id="profil-telephone" name="telephone">
+          </div>
+          <button type="submit" class="profil-save-btn">Enregistrer mon profil</button>
+        </form>
+        <button id="logout-btn" class="profil-logout-btn">Se déconnecter</button>
+      </div>
+    </section>
+  </main>
+  <script>
+    // Affichage conditionnel du bouton "Se connecter" ou "Mon profil"
+    const user = JSON.parse(localStorage.getItem('user'));
+    const loginBtn = document.getElementById('login-btn');
+    const profilLink = document.getElementById('profil-link');
+    if (user && user.email) {
+      loginBtn.style.display = 'none';
+      profilLink.style.display = 'inline-block';
+    } else {
+      loginBtn.style.display = 'inline-block';
+      profilLink.style.display = 'none';
+    }
+
+    // Pré-remplissage et affichage du profil
+    const profilUserData = JSON.parse(localStorage.getItem('user'));
+    if (profilUserData && profilUserData.email) {
+      document.getElementById('profil-email').value = profilUserData.email || '';
+      document.getElementById('profil-nom').value = profilUserData.nom || '';
+      document.getElementById('profil-prenom').value = profilUserData.prenom || '';
+      document.getElementById('profil-adresse').value = profilUserData.adresse || '';
+      document.getElementById('profil-ville').value = profilUserData.ville || '';
+      document.getElementById('profil-codepostal').value = profilUserData.codepostal || '';
+      document.getElementById('profil-telephone').value = profilUserData.telephone || '';
+      // Affichage dans l'entête de la carte
+      document.getElementById('profil-nom-header').textContent = (profilUserData.nom || '') + ' ' + (profilUserData.prenom || '');
+      document.getElementById('profil-email-header').textContent = profilUserData.email || '';
+    } else {
+      window.location.href = 'connexion.html';
+    }
+
+    document.getElementById('profil-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      // Récupérer les valeurs du formulaire
+      const email = document.getElementById('profil-email').value;
+      const nom = document.getElementById('profil-nom').value;
+      const prenom = document.getElementById('profil-prenom').value;
+      const adresse = document.getElementById('profil-adresse').value;
+      const ville = document.getElementById('profil-ville').value;
+      const codepostal = document.getElementById('profil-codepostal').value;
+      const telephone = document.getElementById('profil-telephone').value;
+      // Sauvegarder dans le localStorage
+      localStorage.setItem('user', JSON.stringify({ email, nom, prenom, adresse, ville, codepostal, telephone }));
+      // Mettre à jour l'entête de la carte
+      document.getElementById('profil-nom-header').textContent = nom + ' ' + prenom;
+      document.getElementById('profil-email-header').textContent = email;
+      alert('Profil enregistré avec succès !');
+    });
+    document.getElementById('logout-btn').onclick = function() {
+      localStorage.removeItem('user');
+      window.location.href = 'connexion.html';
+    };
+  </script>
+</body>
+</html>

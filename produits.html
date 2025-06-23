@@ -15,8 +15,11 @@
       <a href="promotions.html">Promotions</a>
       <a href="favoris.html">Favoris</a>
       <a href="panier.html">Panier</a>
+      <a href="gestion-produits.html">Gestion des Produits</a>
+      <a href="gestion-commandes.html" id="gestion-commandes-link" style="display:none;">Gestion des Commandes</a>
       <a href="connexion.html" id="login-btn" style="display:none;">Se connecter</a>
       <a href="profil.html" id="profil-link" style="display:none;">Mon profil</a>
+      <a href="mes-commandes.html" id="mes-commandes-link" style="display:none;">Mes commandes</a>
     </nav>
   </header>
   <main>
@@ -122,20 +125,60 @@
         const produitsContainer = categorieContainer.querySelector('.produits');
         const produitElement = document.createElement('div');
         produitElement.classList.add('produit');
+        let indispoBadge = produit.indisponible ? `<div style='position:absolute;top:10px;left:10px;background:red;color:white;padding:2px 10px;border-radius:8px;font-weight:bold;z-index:2;'>Indisponible</div>` : '';
+        let disabled = produit.indisponible ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : '';
         produitElement.innerHTML = `
-          <img src="Images/${produit.image}" alt="${produit.nom}">
+          <div style='position:relative;'>
+            ${indispoBadge}
+            <img src="Images/${produit.image}" alt="${produit.nom}">
+          </div>
           <h3>${produit.nom}</h3>
           <p>${produit.promotion > 0 ? `<span class='old-price'>${produit.prix} €</span> <span class='new-price'>${(produit.prix * (1 - produit.promotion / 100)).toFixed(2)} €</span>` : `${produit.prix} €`}</p>
           <p class="description">${produit.description || 'Aucune description disponible.'}</p>
           <div class="ajout-panier-quantite">
-            <input type="number" min="1" value="1" class="input-quantite" style="width: 60px; margin-right: 0.5rem;">
-            <button class="add-to-cart" data-nom="${produit.nom}" data-prix="${produit.prix}" data-description="${produit.description}" data-image="${produit.image}" data-promotion="${produit.promotion}">Ajouter au panier</button>
+            <input type="number" min="1" value="1" class="input-quantite" style="width: 60px; margin-right: 0.5rem;" ${produit.indisponible ? 'disabled' : ''}>
+            <button class="add-to-cart" data-nom="${produit.nom}" data-prix="${produit.prix}" data-description="${produit.description}" data-image="${produit.image}" data-promotion="${produit.promotion}" ${disabled}>Ajouter au panier</button>
           </div>
           <button class="add-to-favoris" data-nom="${produit.nom}" data-description="${produit.description}" data-image="${produit.image}">Ajouter aux favoris</button>
         `;
         produitsContainer.appendChild(produitElement);
       }
     });
+
+    // Affichage conditionnel du lien Gestion des Produits (admin uniquement)
+    const gestionProduitsLink = document.querySelector('a[href="gestion-produits.html"]');
+    const gestionCommandesLink = document.getElementById('gestion-commandes-link');
+    const favorisLink = document.querySelector('a[href="favoris.html"]');
+    const panierLink = document.querySelector('a[href="panier.html"]');
+    const mesCommandesLink = document.getElementById('mes-commandes-link');
+    if (user && user.email) {
+      if (user.role !== 'admin') {
+        mesCommandesLink.style.display = 'inline-block';
+      } else {
+        mesCommandesLink.style.display = 'none';
+      }
+      loginBtn.style.display = 'none';
+      profilLink.style.display = 'inline-block';
+      if (user.role === 'admin') {
+        if (gestionProduitsLink) gestionProduitsLink.style.display = 'inline-block';
+        if (gestionCommandesLink) gestionCommandesLink.style.display = 'inline-block';
+        if (favorisLink) favorisLink.style.display = 'none';
+        if (panierLink) panierLink.style.display = 'none';
+        if (mesCommandesLink) mesCommandesLink.style.display = 'none';
+      } else {
+        if (gestionProduitsLink) gestionProduitsLink.style.display = 'none';
+        if (gestionCommandesLink) gestionCommandesLink.style.display = 'none';
+        if (favorisLink) favorisLink.style.display = 'inline-block';
+        if (panierLink) panierLink.style.display = 'inline-block';
+        if (mesCommandesLink) mesCommandesLink.style.display = 'inline-block';
+      }
+    } else {
+      mesCommandesLink.style.display = 'none';
+      loginBtn.style.display = 'inline-block';
+      profilLink.style.display = 'none';
+      if (gestionProduitsLink) gestionProduitsLink.style.display = 'none';
+      if (gestionCommandesLink) gestionCommandesLink.style.display = 'none';
+    }
   </script>
 </body>
 </html>

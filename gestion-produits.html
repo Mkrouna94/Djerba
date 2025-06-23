@@ -16,6 +16,8 @@
       <a href="favoris.html">Favoris</a>
       <a href="panier.html">Panier</a>
       <a href="connexion.html" id="login-btn" style="display:none;">Se connecter</a>
+      <a href="gestion-produits.html">Gestion des Produits</a>
+      <a href="gestion-commandes.html" id="gestion-commandes-link" style="display:none;">Gestion des Commandes</a>
       <a href="profil.html" id="profil-link" style="display:none;">Mon profil</a>
     </nav>
   </header>
@@ -72,12 +74,40 @@
     const user = JSON.parse(localStorage.getItem('user'));
     const loginBtn = document.getElementById('login-btn');
     const profilLink = document.getElementById('profil-link');
+    // Redirection si non admin
+    if (!user || user.role !== 'admin') {
+      window.location.href = 'index.html';
+    }
+    // Masquage du lien Gestion des Produits si non admin
+    const gestionProduitsLink = document.querySelector('a[href="gestion-produits.html"]');
+    const gestionCommandesLink = document.getElementById('gestion-commandes-link');
+    const favorisLink = document.querySelector('a[href="favoris.html"]');
+    const panierLink = document.querySelector('a[href="panier.html"]');
+    const mesCommandesLink = document.querySelector('a[href="mes-commandes.html"]');
     if (user && user.email) {
       loginBtn.style.display = 'none';
       profilLink.style.display = 'inline-block';
+      if (user.role === 'admin') {
+        if (gestionProduitsLink) gestionProduitsLink.style.display = 'inline-block';
+        if (gestionCommandesLink) gestionCommandesLink.style.display = 'inline-block';
+        if (favorisLink) favorisLink.style.display = 'none';
+        if (panierLink) panierLink.style.display = 'none';
+        if (mesCommandesLink) mesCommandesLink.style.display = 'none';
+      } else {
+        if (gestionProduitsLink) gestionProduitsLink.style.display = 'none';
+        if (gestionCommandesLink) gestionCommandesLink.style.display = 'none';
+        if (favorisLink) favorisLink.style.display = 'inline-block';
+        if (panierLink) panierLink.style.display = 'inline-block';
+        if (mesCommandesLink) mesCommandesLink.style.display = 'inline-block';
+      }
     } else {
       loginBtn.style.display = 'inline-block';
       profilLink.style.display = 'none';
+      if (gestionProduitsLink) gestionProduitsLink.style.display = 'none';
+      if (gestionCommandesLink) gestionCommandesLink.style.display = 'none';
+      if (favorisLink) favorisLink.style.display = 'inline-block';
+      if (panierLink) panierLink.style.display = 'inline-block';
+      if (mesCommandesLink) mesCommandesLink.style.display = 'inline-block';
     }
   </script>
 </body>

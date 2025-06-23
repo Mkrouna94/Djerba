@@ -76,8 +76,10 @@ const afficherProduits = () => {
           <img src="Images/${produit.image}" alt="${produit.nom}" style="width: 50px; height: auto;">
           <strong>${produit.nom}</strong> - ${produit.prix} € - ${produit.categorie} - Promotion: ${produit.promotion}%
           <p>Description : ${produit.description}</p>
+          <span style="color:${produit.indisponible ? 'red' : 'green'};font-weight:bold;">${produit.indisponible ? 'Indisponible' : 'Disponible'}</span>
           <button data-index="${index}" class="modifier-produit">Modifier</button>
           <button data-index="${index}" class="supprimer-produit">Supprimer</button>
+          <button data-index="${index}" class="toggle-indispo">${produit.indisponible ? 'Rendre disponible' : 'Rendre indisponible'}</button>
         `;
         listePromotions.appendChild(li);
       }
@@ -93,8 +95,10 @@ const afficherProduits = () => {
         <img src="Images/${produit.image}" alt="${produit.nom}" style="width: 50px; height: auto;">
         <strong>${produit.nom}</strong> - ${produit.prix} € - ${produit.categorie} - Promotion: ${produit.promotion}%
         <p>Description : ${produit.description}</p>
+        <span style="color:${produit.indisponible ? 'red' : 'green'};font-weight:bold;">${produit.indisponible ? 'Indisponible' : 'Disponible'}</span>
         <button data-index="${index}" class="modifier-produit">Modifier</button>
         <button data-index="${index}" class="supprimer-produit">Supprimer</button>
+        <button data-index="${index}" class="toggle-indispo">${produit.indisponible ? 'Rendre disponible' : 'Rendre indisponible'}</button>
       `;
       listeProduits.appendChild(li);
     }
@@ -113,6 +117,15 @@ const afficherProduits = () => {
     button.addEventListener('click', () => {
       const index = button.getAttribute('data-index');
       modifierProduit(index);
+    });
+  });
+
+  document.querySelectorAll('.toggle-indispo').forEach(button => {
+    button.addEventListener('click', () => {
+      const index = button.getAttribute('data-index');
+      produits[index].indisponible = !produits[index].indisponible;
+      localStorage.setItem('produits', JSON.stringify(produits));
+      afficherProduits();
     });
   });
 };

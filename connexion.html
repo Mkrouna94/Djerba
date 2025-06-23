@@ -54,8 +54,13 @@
     document.getElementById('login-form').addEventListener('submit', function(e) {
       e.preventDefault();
       const email = document.getElementById('email').value;
-      // Simuler la connexion en stockant l'utilisateur
-      localStorage.setItem('user', JSON.stringify({ email }));
+           // Détection du rôle : admin si l'email contient 'admin', sinon client
+      let role = 'client';
+      if (email.toLowerCase().includes('admin')) {
+        role = 'admin';
+      }
+      // Simuler la connexion en stockant l'utilisateur avec le rôle
+      localStorage.setItem('user', JSON.stringify({ email, role }));
       alert('Connexion fictive réussie !');
       window.location.href = 'profil.html';
     });

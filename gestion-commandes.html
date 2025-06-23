@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Créer un compte - L'Apéro by Djerba</title>
+  <title>Gestion des Commandes - L'Apéro by Djerba</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,55 +13,33 @@
       <a href="index.html">Accueil</a>
       <a href="produits.html">Produits</a>
       <a href="promotions.html">Promotions</a>
-      <a href="favoris.html">Favoris</a>
-      <a href="panier.html">Panier</a>
-      <a href="gestion-produits.html">Gestion des Produits</a>
+      <a href="favoris.html" id="favoris-link">Favoris</a>
+      <a href="panier.html" id="panier-link">Panier</a>
+      <a href="mes-commandes.html" id="mes-commandes-link">Mes commandes</a>
+      <a href="gestion-produits.html" id="gestion-produits-link" style="display:none;">Gestion des Produits</a>
       <a href="gestion-commandes.html" id="gestion-commandes-link" style="display:none;">Gestion des Commandes</a>
       <a href="connexion.html" id="login-btn" style="display:none;">Se connecter</a>
       <a href="profil.html" id="profil-link" style="display:none;">Mon profil</a>
-      <a href="mes-commandes.html" id="mes-commandes-link" style="display:none;">Mes commandes</a>
     </nav>
   </header>
   <main>
-    <section class="main-card form-card">
-      <h2 class="section-title">Créer un compte</h2>
-      <form id="register-form" class="styled-form">
-        <div class="form-group">
-          <label for="register-email">Adresse e-mail :</label>
-          <input type="email" id="register-email" name="email" required>
-        </div>
-        <div class="form-group">
-          <label for="register-password">Mot de passe :</label>
-          <input type="password" id="register-password" name="password" required>
-        </div>
-        <div class="form-group">
-          <label for="register-confirm">Confirmer le mot de passe :</label>
-          <input type="password" id="register-confirm" name="confirm" required>
-        </div>
-        <button type="submit" class="profil-save-btn">Créer mon compte</button>
-      </form>
-      <div class="form-links">
-        <p>Déjà un compte ? <a href="connexion.html">Se connecter</a></p>
-      </div>
+    <section class="main-card">
+      <h2 class="section-title">Gestion des Commandes</h2>
+      <div id="admin-commandes"></div>
     </section>
   </main>
+  <script src="gestion-commandes.js"></script>
   <script>
     // Affichage conditionnel du bouton "Se connecter" ou "Mon profil"
     const user = JSON.parse(localStorage.getItem('user'));
     const loginBtn = document.getElementById('login-btn');
     const profilLink = document.getElementById('profil-link');
-    // Affichage conditionnel du lien Gestion des Produits (admin uniquement)
-    const gestionProduitsLink = document.querySelector('a[href="gestion-produits.html"]');
+    const gestionProduitsLink = document.getElementById('gestion-produits-link');
     const gestionCommandesLink = document.getElementById('gestion-commandes-link');
-    const favorisLink = document.querySelector('a[href="favoris.html"]');
-    const panierLink = document.querySelector('a[href="panier.html"]');
+    const favorisLink = document.getElementById('favoris-link');
+    const panierLink = document.getElementById('panier-link');
     const mesCommandesLink = document.getElementById('mes-commandes-link');
     if (user && user.email) {
-      if (user.role !== 'admin') {
-        mesCommandesLink.style.display = 'inline-block';
-      } else {
-        mesCommandesLink.style.display = 'none';
-      }
       loginBtn.style.display = 'none';
       profilLink.style.display = 'inline-block';
       if (user.role === 'admin') {
@@ -78,24 +56,14 @@
         if (mesCommandesLink) mesCommandesLink.style.display = 'inline-block';
       }
     } else {
-      mesCommandesLink.style.display = 'none';
       loginBtn.style.display = 'inline-block';
       profilLink.style.display = 'none';
       if (gestionProduitsLink) gestionProduitsLink.style.display = 'none';
       if (gestionCommandesLink) gestionCommandesLink.style.display = 'none';
+      if (favorisLink) favorisLink.style.display = 'inline-block';
+      if (panierLink) panierLink.style.display = 'inline-block';
+      if (mesCommandesLink) mesCommandesLink.style.display = 'inline-block';
     }
-    document.getElementById('register-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const email = document.getElementById('register-email').value;
-      const password = document.getElementById('register-password').value;
-      const confirm = document.getElementById('register-confirm').value;
-      if(password !== confirm) {
-        alert('Les mots de passe ne correspondent pas.');
-        return;
-      }
-      alert('Compte fictif créé avec succès !');
-      window.location.href = 'connexion.html';
-    });
   </script>
 </body>
 </html>
